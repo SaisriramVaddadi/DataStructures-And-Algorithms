@@ -1,0 +1,103 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) throws IOException {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        
+        int t = Integer.parseInt(br.readLine());
+        
+        while(t-- != 0){
+            
+            String[] s = br.readLine().split(" ");
+            
+            String a = s[0];
+            String b = s[1];
+            
+            char[] A = a.toCharArray();
+            char[] B = b.toCharArray();
+            
+            int[] ca = new int[26]; /* Count array for the Pattern */
+            
+            for(int i=0; i<A.length; i++){
+                
+                ca[A[i] - 'a'] +=1;     /* Setting the frequencies of the characters in the pattern to count array */
+            }
+            
+            int h = B.length;  /* maximum possible length is the Main string length */
+            int l = A.length;  /* minimum possible length is the pattern length */
+            
+            bw.write(bs(A,B,ca,l,h) + "\n"); /* Calling the Binary Search function which decides the minimum window                                                    with all the substrings of the pattern  */
+            // bw.write("\n");
+                   
+        }
+        bw.flush();
+    }
+        
+       static int bs(char[] A, char[] B, int[] ca,int l, int h){
+            
+            
+           int res = -1;
+           
+           
+            while(l<=h)
+            {
+                int m = l+(h-l)/2;
+                
+                int[] cb = new int[26]; /* Initiating the count array for Main String */
+                
+                if(ok(ca,cb,m,A,B)){
+                    h = m-1;
+                    res = m;
+                }
+                else{
+                    l = m+1;
+                }
+            }
+           return res;
+        }
+        
+        static boolean ok(int[] ca, int[] cb, int m, char[] a, char[] b){
+            
+            int n = b.length;
+            
+            for(int i=0; i<m; i++){ /* Counting the frequencies of the fist window */
+            
+                cb[b[i]-'a'] += 1;
+            }
+            if(cmp(ca,cb)){        /* Checking if the pattern is present in the substring or not */
+                return true;
+            }
+            for(int i = m; i < n; i++){ /* Sliding the window upto n */
+                
+                cb[b[i-m] - 'a']--;    /* removing the 1st element count of the window or (i-m)th element count*/                                                
+                cb[b[i] - 'a']++;      /*adding the ith element count in the count window*/
+                
+                if(cmp(ca,cb)){
+                    return true;
+                }
+                
+            }
+            
+            return false;
+        }
+        
+        static boolean cmp(int[] ca, int[] cb){
+            
+            for(int i=0; i<26; i++){
+                
+                if(ca[i] !=0 ){
+                    
+                    if(cb[i] < ca[i]){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+}
